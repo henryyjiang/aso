@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: activestructopt
+Version: 0.0.0
+Summary: Active learning structural optimization built on top of matdeeplearn
+Home-page: https://github.com/Fung-Lab/ActiveStructOpt
+Dynamic: home-page
+Dynamic: summary
