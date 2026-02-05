@@ -401,30 +401,9 @@ random_config = {
    'profiles': [{'name': 'MAE', 'args': {}}],
    }}}
    
-
-# pso_config = {
-#  'dataset': {'preprocess_params': {'prediction_level': 'graph'}},
-#  'aso_params': {'max_forward_calls': 100,
-#   'sampler': {'name': 'Perturbation', 
-#   'args': {'perturblσ': 0.1, 'perturbrmin': 0.1, 'perturbrmax': 1.0}},
-#   'dataset': {'name': 'SimpleDataset', 'args': {'seed': 0}},
-#   'model': {'name': 'GroundTruth', 'args': {}, 
-#    'switch_profiles': [], 'profiles': [{}]},
-#   'optimizer': {'name': 'PSO2',
-#    'args': {}, 
-#    'switch_profiles': [],
-#    'profiles': [{'name': 'MAE', 'args': {}}],
-#    'switch_opt_profiles': [20],
-#    'opt_profiles': [{'starts': 128, 'iters_per_start': 100,}, 
-#     {'starts': 1024, 'iters_per_start': 1000,}],
-#    'switch_acq_profiles': [20],
-#    'acq_profiles': [{'name': 'MAEUncertainty', 'args': {'λ': 0.1}}, 
-#     {'name': 'MAE', 'args': {}}],
-#    }}}
-
 pso_config = {
-'trainer': 'property',
-'task': {'identifier': 'my_train_job',
+ 'trainer': 'property',
+ 'task': {'identifier': 'my_train_job',
   'parallel': False,
   'save_dir': None,
   'continue_job': False,
@@ -434,24 +413,7 @@ pso_config = {
   'use_amp': True,
   'run_mode': 'train',
   'model_save_frequency': -1},
- 'dataset': {
-  'preprocess_params': {
-   'edge_calc_method': 'ocp',
-   'preprocess_edges': True,
-   'preprocess_edge_features': True,
-   'preprocess_node_features': True,
-   'cutoff_radius': 8.0,
-   'n_neighbors': 250,
-   'num_offsets': 2,
-   'node_dim': 100,
-   'edge_dim': 50,
-   'prediction_level': 'graph',
-   'self_loop': True,
-   'node_representation': 'onehot',
-   'all_neighbors': True
-  }
- },
-  'model': {
+ 'model': {
    'name': 'torchmd_etEarly',
    'hidden_channels': 64,
    'num_filters': 128,
@@ -494,7 +456,7 @@ pso_config = {
     'threshold': 0.0002}},
   'verbosity': 1,
   'batch_tqdm': False},
- 'dataset': {'name': 'test_data',
+ 'dataset': {'name': 'test_data',  # Single merged dataset key
   'processed': False,
   'dataset_device': 'cpu',
   'target_path': None,
@@ -520,7 +482,7 @@ pso_config = {
  'submit': None,
  'aso_params': {'max_forward_calls': 100,
   'sampler': {'name': 'Perturbation', 'args': {'perturbrmin': 0.1, 
-   'perturbrmax': 1.0, }},
+   'perturbrmax': 1.0}},
   'dataset': {'name': 'KFoldsDataset', 'args': {'N': 30, 
    'k': 5, 
    'perturbrmin': 0.0, 
@@ -532,9 +494,23 @@ pso_config = {
     'switch_profiles': [], 
     'profiles': [{'iterations': 500, 'lr': 0.001}]},
   'optimizer': {'name': 'PSO2',
-   'args': {}, 
+   'args': {
+    'particles': 10,
+    'iters': 50,
+    'local_steps': 0,
+    'c1': 1.2,
+    'c2': 1.2,
+    'w': 0.5,
+    'optimize_atoms': True,
+    'optimize_lattice': True,
+    'constraint_scale': 1.0,
+    'save_obj_values': True,
+    'use_torchsim': False,
+   }, 
    'switch_profiles': [20],
    'profiles': [{'name': 'MAEUncertainty', 'args': {'λ': 0.1}}, 
     {'name': 'MAE', 'args': {}}],
+    'switch_acq_profiles': [20],
+   'acq_profiles': [{'name': 'MAEUncertainty', 'args': {'λ': 0.1}}, 
+    {'name': 'MAE', 'args': {}}],
    }}}
-
