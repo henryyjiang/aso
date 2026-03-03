@@ -8,6 +8,7 @@ import os
 from pymatgen.io.cif import CifParser
 
 def main():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     config = pso_config
     config['aso_params']['sampler']['name'] = 'Perturbation'
     config['aso_params']['sampler']['args'] = {'perturbrmin': 0.1, 'perturbrmax': 1.0}
@@ -35,18 +36,20 @@ def main():
     config['aso_params']['model']['profiles'] = [{'iterations': 500, 'lr': 0.001}]
     #config['aso_params']['model']['profiles'] = [{'iterations': 10, 'lr': 0.001}]
 
-    test_num = '1' # make folder called active_res_progress1
-    filename = list(filter(lambda x: x.startswith(str(sys.argv[1]) + '_'), os.listdir('active_res_progress' + test_num)))[0]
+    test_num = '1'
+    progress_dir = os.path.join(script_dir, 'active_res_progress' + test_num)
+    if not os.path.exists(progress_dir):
+        os.makedirs(progress_dir)
 
     pristine_structure = CifParser("starting/" + str(sys.argv[1]) + ".cif").get_structures(primitive = False)[0]
     target_structure = CifParser("target/" + str(sys.argv[1]) + ".cif").get_structures(primitive = False)[0]
 
-    pdf_folder = f'/storage/xxxx/3/7/xxxx/appl_tests/mp/pdfs/{sys.argv[1]}'
+    pdf_folder = os.path.join(script_dir, 'pdfs', str(sys.argv[1]))
     if not os.path.exists(pdf_folder):
         os.makedirs(pdf_folder)
 
     rdf_func = PDF(pristine_structure, bisoequiv = 1.0, qmax = 18, qmin = 1, rmax = 10, rmin = 1,
-            python = '/home/xxxxx/xxxxx/.conda/envs/py37/bin/python3.7',
+            python = sys.executable,
             folder = pdf_folder)
 
     target_promise = copy.deepcopy(rdf_func)
@@ -54,13 +57,19 @@ def main():
     target_spec = target_promise.resolve()
     target_spec = np.mean(target_spec[np.array(rdf_func.mask)], axis = 0)
 
-    if '_199' in filename:
-        sys.exit()
+    # Check for existing progress to resume, otherwise start fresh
+    progress_files = list(filter(lambda x: x.startswith(str(sys.argv[1]) + '_'), os.listdir(progress_dir)))
+    if progress_files:
+        filename = progress_files[0]
+        if '_199' in filename:
+            print(f"Structure {sys.argv[1]} already completed (iteration 199), skipping.")
+            sys.exit()
+        al = ActiveLearning(rdf_func, target_spec, pristine_structure, config = config, verbosity = 0, index = sys.argv[1], target_structure = target_structure,
+                progress_file = os.path.join(progress_dir, filename), override_config = True)
+    else:
+        al = ActiveLearning(rdf_func, target_spec, pristine_structure, config = config, verbosity = 0, index = sys.argv[1], target_structure = target_structure)
 
-    al = ActiveLearning(rdf_func, target_spec, pristine_structure, config = config, verbosity = 0, index = sys.argv[1], target_structure = target_structure,
-            progress_file = 'active_res_progress' + test_num + '/' + filename, override_config = True)
-    al.optimize(save_progress_dir = 'active_res_progress' + test_num)
-    #al.save('active_res' + test_num + '/' + str(sys.argv[1]) + ".pkl", additional_data = {'target_structure': target_structure})
+    al.optimize(save_progress_dir = progress_dir)
 
 if __name__ == "__main__":
     main()
