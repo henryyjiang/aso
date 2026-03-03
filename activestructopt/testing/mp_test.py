@@ -1,5 +1,5 @@
 from activestructopt.simulation.pdf import PDF
-from activestructopt.active.config import mt_config
+from activestructopt.active.config import pso_config
 from activestructopt.active.active import ActiveLearning
 import copy
 import numpy as np
@@ -9,25 +9,33 @@ from pymatgen.io.cif import CifParser
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    config = mt_config
-    config["aso_params"]["sampler"]["name"] = "Wyckoff"
-    config["aso_params"]["sampler"]["args"] = {"use_random_state": False}
-    config["aso_params"]["optimizer"]["args"] = {"optimizer": "Adam",
-      "optimizer_args": {},
-      "pos_lr": 0.01,
-      "cell_lr": 0.01,
-      "optimize_atoms": True,
-      "optimize_lattice": True,
-      "save_obj_values": False,
-      "random_starts": False,}
+    config = pso_config
+    config['aso_params']['sampler']['name'] = 'Perturbation'
+    config['aso_params']['sampler']['args'] = {'perturbrmin': 0.1, 'perturbrmax': 1.0}
+    config['aso_params']['optimizer']['args'] = {
+    'particles': 10,
+    'iters': 10,
+    'c1': 0.8,
+    'c2': 0.8,
+    'w': 0.4,
+    'optimize_atoms': True,
+    'optimize_lattice': True,
+    'constraint_scale': 1.0,
+    'save_obj_values': True,
+    'use_torchsim': True,
+   'torchsim_model_type': 'mattersim',
+   'torchsim_model_path': 'mattersim-v1.0.0-5M.pth',
+   'torchsim_optimizer': 'frechet_cell_fire',
+   'local_steps': 25,
+   }
 
-    config["aso_params"]["max_forward_calls"] = 200
-    config["aso_params"]["optimizer"]["switch_profiles"] = [40]
-    config["aso_params"]["optimizer"]["switch_opt_profiles"] = [5]
-    config["aso_params"]["optimizer"]["opt_profiles"] =  [{"starts": 128, "iters_per_start": 100,}, {"starts": 1024, "iters_per_start": 1000,}]
-    config["aso_params"]["model"]["profiles"] = [{"iterations": 250, "lr": 0.001, "radius": 6.0, "max_num_neighbors": 120, "batch_size": 32}]
-    #config["aso_params"]["model"]["profiles"] = [{"iterations": 10, "lr": 0.001}]
-
+    config['aso_params']['max_forward_calls'] = 100
+    config['aso_params']['optimizer']['switch_profiles'] = [20]
+    config['aso_params']['optimizer']['switch_opt_profiles'] = [20]
+    config['aso_params']['optimizer']['opt_profiles'] =  [{'starts': 128, 'iters_per_start': 100,}, {'starts': 1024, 'iters_per_start': 1000,}]
+    config['aso_params']['model']['profiles'] = [{'iterations': 500, 'lr': 0.001}]
+    #config['aso_params']['model']['profiles'] = [{'iterations': 10, 'lr': 0.001}]
+    
     test_num = "1"
     progress_dir = os.path.join(script_dir, "active_res_progress" + test_num)
     if not os.path.exists(progress_dir):
