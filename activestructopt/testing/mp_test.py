@@ -10,8 +10,11 @@ from pymatgen.io.cif import CifParser
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config = pso_config
-    config['aso_params']['sampler']['name'] = 'Perturbation'
-    config['aso_params']['sampler']['args'] = {'perturbrmin': 0.1, 'perturbrmax': 1.0}
+    # config['aso_params']['sampler']['name'] = 'Perturbation'
+    # config['aso_params']['sampler']['args'] = {'perturbrmin': 0.1, 'perturbrmax': 1.0}
+    config['aso_params']['sampler']['name'] = 'Wyckoff'
+    config['aso_params']['sampler']['args'] = {'use_random_state': False}
+    
     config['aso_params']['optimizer']['args'] = {
     'particles': 10,
     'iters': 10,
