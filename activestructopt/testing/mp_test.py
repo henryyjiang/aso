@@ -29,11 +29,11 @@ def main():
    'local_steps': 25,
    }
 
-    config['aso_params']['max_forward_calls'] = 100
-    config['aso_params']['optimizer']['switch_profiles'] = [20]
-    config['aso_params']['optimizer']['switch_opt_profiles'] = [20]
+    config['aso_params']['max_forward_calls'] = 200
+    config['aso_params']['optimizer']['switch_profiles'] = [40]
+    config['aso_params']['optimizer']['switch_opt_profiles'] = [5]
     config['aso_params']['optimizer']['opt_profiles'] =  [{'starts': 128, 'iters_per_start': 100,}, {'starts': 1024, 'iters_per_start': 1000,}]
-    config['aso_params']['model']['profiles'] = [{'iterations': 500, 'lr': 0.001}]
+    config['aso_params']['model']['profiles'] = [{'iterations': 250, 'lr': 0.001}]
     #config['aso_params']['model']['profiles'] = [{'iterations': 10, 'lr': 0.001}]
     
     test_num = "1"
