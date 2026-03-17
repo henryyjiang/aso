@@ -16,11 +16,11 @@ def main():
     config['aso_params']['sampler']['args'] = {'use_random_state': False}
     
     config['aso_params']['optimizer']['args'] = {
-    'particles': 10,
-    'iters': 10,
-    'c1': 0.8,
-    'c2': 0.8,
-    'w': 0.4,
+    'particles': 20,
+    'iters': 25,
+    'c1': 1.2,
+    'c2': 1.2,
+    'w': 0.5,
     'optimize_atoms': True,
     'optimize_lattice': True,
     'constraint_scale': 1.0,

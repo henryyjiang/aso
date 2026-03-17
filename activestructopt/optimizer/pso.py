@@ -217,8 +217,18 @@ class PSO(BaseOptimizer):
             for p in range(particles):
                 atoms = current_atoms[p]
                 
+                # Debug: print structure info on first iteration
+                if iteration == 0 and p == 0:
+                    print(f"DEBUG: atoms has {len(atoms)} atoms, symbols: {atoms.get_chemical_symbols()}")
+                    print(f"DEBUG: atoms cell:\n{atoms.get_cell()}")
+                    print(f"DEBUG: atoms positions shape: {atoms.get_positions().shape}")
+                
                 try:
                     structure = AseAtomsAdaptor.get_structure(atoms)
+                    
+                    if iteration == 0 and p == 0:
+                        print(f"DEBUG: pymatgen structure has {len(structure)} sites")
+                        print(f"DEBUG: structure lattice: {structure.lattice}")
                     
                     data = prepare_data_pmg(structure, dataset.config, pos_grad=False,
                         device=device, preprocess=True, cell_grad=False)
